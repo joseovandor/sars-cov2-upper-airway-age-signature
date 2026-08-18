@@ -1,25 +1,25 @@
 # ============================================================
-# COMPLEXHEATMAP FINAL
+# FINAL COMPLEXHEATMAP
 #
 # Epithelial cell-type localization
-# Pediatric | Adult emparejados
+# Pediatric | Adult matched
 #
-# Filas:
+# Rows:
 # Pediatric-enriched
 # Adult-enriched
 #
-# Pediatric = amarillo
-# Adult     = azul
+# Pediatric = yellow
+# Adult     = blue
 #
-# Expresión relativa:
-# Azul -> blanco -> amarillo
+# Relative expression:
+# Blue -> white -> yellow
 #
-# Significancia:
+# Significance:
 # *** = FDR < 0.001
 # **  = FDR < 0.01
 # *   = FDR < 0.05
 #
-# Sin marcas para FDR >= 0.05
+# No marks for FDR >= 0.05
 #
 # TIFF:
 # 600 dpi
@@ -28,7 +28,7 @@
 
 
 # ============================================================
-# 0. PAQUETES
+# 0. PACKAGES
 # ============================================================
 
 library(ComplexHeatmap)
@@ -39,7 +39,7 @@ library(tibble)
 
 
 # ============================================================
-# 1. LIMITAR Z-SCORE
+# 1. CLAMP Z-SCORE
 # ============================================================
 
 expression_scaled_plot <- expression_scaled
@@ -93,7 +93,7 @@ gene_direction <- age_difference %>%
 
 
 # ============================================================
-# 3. ANOTACIÓN DE FILAS
+# 3. ROW ANNOTATION
 # ============================================================
 
 row_annotation_df <- data.frame(
@@ -122,7 +122,7 @@ row_annotation_df <- data.frame(
 
 
 # ============================================================
-# 4. ORDEN DE GENES
+# 4. GENE ORDER
 # ============================================================
 
 genes_pediatric <- gene_order[
@@ -178,7 +178,7 @@ row_split <- factor(
 
 
 # ============================================================
-# 6. INFORMACIÓN DE COLUMNAS
+# 6. COLUMN INFORMATION
 # ============================================================
 
 column_celltype <- sub(
@@ -211,7 +211,7 @@ column_age <- factor(
 
 
 # ============================================================
-# 7. COLORES
+# 7. COLORS
 # ============================================================
 
 age_colors <- c(
@@ -223,7 +223,7 @@ age_colors <- c(
 
 
 # ============================================================
-# 8. PALETA DE EXPRESIÓN
+# 8. EXPRESSION PALETTE
 # ============================================================
 
 col_fun <- circlize::colorRamp2(
@@ -251,15 +251,15 @@ col_fun <- circlize::colorRamp2(
 
 
 # ============================================================
-# 9. MATRIZ DE SIGNIFICANCIA
+# 9. SIGNIFICANCE MATRIX
 #
-# Solo FDR < 0.05
+# Only FDR < 0.05
 #
 # *** = FDR < 0.001
 # **  = FDR < 0.01
 # *   = FDR < 0.05
 #
-# Se muestra solamente en la columna Adult.
+# Shown only in the Adult column.
 # ============================================================
 
 sig_matrix_final <- matrix(
@@ -293,7 +293,7 @@ colnames(
 
 
 # ============================================================
-# 10. SELECCIONAR RESULTADOS SIGNIFICATIVOS
+# 10. SELECT SIGNIFICANT RESULTS
 # ============================================================
 
 sig_results <- test_results %>%
@@ -324,10 +324,10 @@ sig_results <- test_results %>%
 
 
 # ============================================================
-# 11. MOSTRAR RESULTADOS SIGNIFICATIVOS
+# 11. DISPLAY SIGNIFICANT RESULTS
 #
-# CORREGIDO:
-# convertir a tibble antes de usar n = Inf
+# FIXED:
+# convert to tibble before using n = Inf
 # ============================================================
 
 cat(
@@ -356,7 +356,7 @@ print(
 
 
 # ============================================================
-# 12. COLOCAR ASTERISCOS EN COLUMNA ADULT
+# 12. PLACE ASTERISKS IN THE ADULT COLUMN
 # ============================================================
 
 if (nrow(sig_results) > 0) {
@@ -402,7 +402,7 @@ if (nrow(sig_results) > 0) {
 
 
 # ============================================================
-# 13. ANOTACIÓN SUPERIOR
+# 13. TOP ANNOTATION
 # ============================================================
 
 top_anno <- HeatmapAnnotation(
@@ -484,7 +484,7 @@ top_anno <- HeatmapAnnotation(
 
 
 # ============================================================
-# 14. LABELS DE COLUMNAS
+# 14. COLUMN LABELS
 # ============================================================
 
 column_labels <- as.character(
@@ -509,7 +509,7 @@ ht <- Heatmap(
   
   
   # ==========================================================
-  # FILAS
+  # ROWS
   # ==========================================================
   
   cluster_rows =
@@ -576,7 +576,7 @@ ht <- Heatmap(
   
   
   # ==========================================================
-  # COLUMNAS
+  # COLUMNS
   # ==========================================================
   
   cluster_columns =
@@ -633,7 +633,7 @@ ht <- Heatmap(
   
   
   # ==========================================================
-  # ANOTACIÓN SUPERIOR
+  # TOP ANNOTATION
   # ==========================================================
   
   top_annotation =
@@ -641,7 +641,7 @@ ht <- Heatmap(
   
   
   # ==========================================================
-  # BORDES
+  # BORDERS
   # ==========================================================
   
   rect_gp =
@@ -656,7 +656,7 @@ ht <- Heatmap(
   
   
   # ==========================================================
-  # ASTERISCOS DE SIGNIFICANCIA
+  # SIGNIFICANCE ASTERISKS
   # ==========================================================
   
   cell_fun = function(
@@ -708,7 +708,7 @@ ht <- Heatmap(
   
   
   # ==========================================================
-  # LEYENDA HORIZONTAL ABAJO
+  # HORIZONTAL LEGEND AT THE BOTTOM
   # ==========================================================
   
   heatmap_legend_param = list(
@@ -800,7 +800,7 @@ ht <- Heatmap(
 
 
 # ============================================================
-# 16. MOSTRAR EN RSTUDIO
+# 16. DISPLAY IN RSTUDIO
 # ============================================================
 
 draw(
@@ -834,7 +834,7 @@ draw(
 
 
 # ============================================================
-# 17. GUARDAR TIFF
+# 17. SAVE TIFF
 #
 # 600 dpi
 # compression LZW
@@ -904,12 +904,12 @@ dev.off()
 
 
 # ============================================================
-# 18. RESUMEN
+# 18. SUMMARY
 # ============================================================
 
 cat(
   "\n========================================\n",
-  "HEATMAP FINAL GENERADO\n",
+  "FINAL HEATMAP GENERATED\n",
   "========================================\n"
 )
 
@@ -930,7 +930,7 @@ cat(
 
 
 cat(
-  "\nFigura guardada en:\n",
+  "\nFigure saved to:\n",
   file.path(
     figure_dir,
     "Epithelial_Pediatric_Adult_ComplexHeatmap_significant.tiff"

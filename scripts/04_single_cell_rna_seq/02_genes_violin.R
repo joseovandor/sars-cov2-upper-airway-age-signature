@@ -1,18 +1,18 @@
 # ============================================================
-# PARTE 2
-# VIOLIN PLOTS DE RESULTADOS SIGNIFICATIVOS
+# PART 2
+# VIOLIN PLOTS OF SIGNIFICANT RESULTS
 #
 # FDR < 0.05
 #
-# Pediatric = amarillo
-# Adult     = azul
+# Pediatric = yellow
+# Adult     = blue
 #
-# Cada punto = DONANTE
+# Each point = DONOR
 # ============================================================
 
 
 # ============================================================
-# 0. PAQUETES
+# 0. PACKAGES
 # ============================================================
 
 library(dplyr)
@@ -21,7 +21,7 @@ library(tibble)
 
 
 # ============================================================
-# 1. COLORES
+# 1. COLORS
 # ============================================================
 
 group_colors <- c(
@@ -35,7 +35,7 @@ group_colors <- c(
 
 
 # ============================================================
-# 2. SELECCIONAR SOLO SIGNIFICATIVOS
+# 2. SELECT SIGNIFICANT ONLY
 # ============================================================
 
 significant_results <- test_results %>%
@@ -53,7 +53,7 @@ significant_results <- test_results %>%
 
 
 cat(
-  "\nResultados significativos FDR < 0.05:\n"
+  "\nSignificant results FDR < 0.05:\n"
 )
 
 
@@ -66,19 +66,19 @@ print(
 
 
 # ============================================================
-# 3. DETENER SI NO HAY SIGNIFICATIVOS
+# 3. STOP IF THERE ARE NO SIGNIFICANT RESULTS
 # ============================================================
 
 if (nrow(significant_results) == 0) {
   
   stop(
-    "\nNo existen asociaciones con FDR < 0.05."
+    "\nNo associations with FDR < 0.05 exist."
   )
 }
 
 
 # ============================================================
-# 4. PREPARAR DATOS
+# 4. PREPARE DATA
 # ============================================================
 
 violin_data <- expr_primary %>%
@@ -112,7 +112,7 @@ violin_data$Group_plot <- factor(
 
 
 # ============================================================
-# 5. QUEDARNOS CON GEN x CELL TYPE SIGNIFICATIVOS
+# 5. KEEP SIGNIFICANT GENE x CELL TYPE PAIRS
 # ============================================================
 
 violin_data <- violin_data %>%
@@ -153,7 +153,7 @@ violin_data <- violin_data %>%
 
 
 # ============================================================
-# 7. ETIQUETA DE SIGNIFICANCIA
+# 7. SIGNIFICANCE LABEL
 # ============================================================
 
 violin_data <- violin_data %>%
@@ -194,7 +194,7 @@ violin_data <- violin_data %>%
 
 
 # ============================================================
-# 8. POSICIÓN DE ANOTACIONES
+# 8. ANNOTATION POSITION
 # ============================================================
 
 violin_annotation <- violin_data %>%
@@ -261,7 +261,7 @@ violin_annotation <- violin_data %>%
 
 
 # ============================================================
-# 9. VIOLINES COMBINADOS
+# 9. COMBINED VIOLIN PLOTS
 # ============================================================
 
 p_violin <- ggplot(
@@ -277,7 +277,7 @@ p_violin <- ggplot(
 ) +
   
   # ----------------------------------------------------------
-# VIOLÍN
+# VIOLIN
 # ----------------------------------------------------------
 
 geom_violin(
@@ -302,7 +302,7 @@ geom_boxplot(
   
   
   # ----------------------------------------------------------
-# DONANTES
+# DONORS
 # ----------------------------------------------------------
 
 geom_jitter(
@@ -384,7 +384,7 @@ geom_segment(
   
   
   # ----------------------------------------------------------
-# SIGNIFICANCIA + FDR
+# SIGNIFICANCE + FDR
 # ----------------------------------------------------------
 
 geom_text(
@@ -415,7 +415,7 @@ facet_wrap(
   
   
   # ----------------------------------------------------------
-# COLORES
+# COLORS
 # ----------------------------------------------------------
 
 scale_fill_manual(
@@ -429,7 +429,7 @@ scale_fill_manual(
   
   
   # ----------------------------------------------------------
-# ESPACIO PARA FDR
+# SPACE FOR FDR
 # ----------------------------------------------------------
 
 scale_y_continuous(
@@ -510,7 +510,7 @@ print(
 
 
 # ============================================================
-# 10. DIRECTORIO
+# 10. DIRECTORY
 # ============================================================
 
 violin_dir <- file.path(
@@ -527,7 +527,7 @@ dir.create(
 
 
 # ============================================================
-# 11. GUARDAR FIGURA COMBINADA TIFF
+# 11. SAVE COMBINED TIFF FIGURE
 # ============================================================
 
 ggsave(

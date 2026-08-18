@@ -1,32 +1,32 @@
 # ============================================================
 # YOSHIDA AIRWAY COVID-19
 #
-# A. UMAP de tipos celulares epiteliales utilizados
-# B. Proporciones celulares Pediatric vs Adult
+# A. UMAP of the epithelial cell types used
+# B. Cell proportions, Pediatric vs Adult
 #
 # UMAP:
 # - COVID+
 # - nasal cavity
-# - Pediatric + Adult juntos
-# - solo tipos epiteliales válidos
-# - paleta Scanpy / Matplotlib tab10
+# - Pediatric + Adult together
+# - only valid epithelial types
+# - Scanpy / Matplotlib tab10 palette
 #
-# PROPORCIONES:
-# - calculadas por DONANTE
-# - ANTES del filtro >=20 células donor x cell type
+# PROPORTIONS:
+# - calculated per DONOR
+# - BEFORE the >=20 cells per donor x cell type filter
 # - Wilcoxon Pediatric vs Adult
-# - corrección BH/FDR
+# - BH/FDR correction
 #
-# Estilo:
-# - similar a Scanpy / Nature
-# - leyendas a la derecha
-# - textos grandes
-# - sin títulos redundantes
+# Style:
+# - similar to Scanpy / Nature
+# - legends on the right
+# - large text
+# - no redundant titles
 # ============================================================
 
 
 # ============================================================
-# 0. PAQUETES
+# 0. PACKAGES
 # ============================================================
 
 library(SingleCellExperiment)
@@ -39,7 +39,7 @@ library(grid)
 
 
 # ============================================================
-# 1. TIPOS CELULARES EPITELIALES
+# 1. EPITHELIAL CELL TYPES
 # ============================================================
 
 epithelial_celltypes <- c(
@@ -59,11 +59,11 @@ epithelial_celltypes <- c(
 
 
 # ============================================================
-# 2. SOLO EPITELIALES QUE FUERON VÁLIDOS
-#    EN EL ANÁLISIS PRINCIPAL
+# 2. ONLY EPITHELIAL TYPES THAT WERE VALID
+#    IN THE PRIMARY ANALYSIS
 #
-# valid_celltypes ya contiene los tipos celulares
-# que tuvieron >=3 donantes en ambos grupos.
+# valid_celltypes already contains the cell types
+# that had >=3 donors in both groups.
 # ============================================================
 
 epithelial_valid <- epithelial_celltypes[
@@ -84,16 +84,16 @@ print(
 
 
 cat(
-  "\nNúmero de tipos celulares:",
+  "\nNumber of cell types:",
   length(epithelial_valid),
   "\n"
 )
 
 
 # ============================================================
-# 3. PALETA SCANPY / MATPLOTLIB TAB10
+# 3. SCANPY / MATPLOTLIB TAB10 PALETTE
 #
-# Colores categóricos clásicos de Matplotlib
+# Classic Matplotlib categorical colors
 # ============================================================
 
 scanpy_tab10 <- c(
@@ -110,14 +110,14 @@ scanpy_tab10 <- c(
 )
 
 
-# Si tienes más de 10 poblaciones:
-# usaríamos tab20.
-# Para este caso deberían ser <=10.
+# If you have more than 10 populations:
+# we would use tab20.
+# For this case there should be <=10.
 
 if (length(epithelial_valid) > length(scanpy_tab10)) {
   
   stop(
-    "Hay más de 10 categorías. Usa una paleta tab20."
+    "There are more than 10 categories. Use a tab20 palette."
   )
 }
 
@@ -135,19 +135,19 @@ names(
 
 
 # ============================================================
-# PARTE A
+# PART A
 # UMAP
 # ============================================================
 
 
 # ============================================================
-# 4. CÉLULAS PARA UMAP
+# 4. CELLS FOR UMAP
 #
-# sce_age_filt contiene:
+# sce_age_filt contains:
 # - COVID+
 # - nasal cavity
 # - Pediatric / Adult
-# - combinaciones donor x cell type >=20 células
+# - donor x cell type combinations with >=20 cells
 # ============================================================
 
 keep_umap <- sce_age_filt$Cell_type_annotation_level2 %in%
@@ -161,26 +161,26 @@ sce_umap_epi <- sce_age_filt[
 
 
 cat(
-  "\nCélulas incluidas en UMAP:",
+  "\nCells included in UMAP:",
   ncol(sce_umap_epi),
   "\n"
 )
 
 
 # ============================================================
-# 5. COMPROBAR UMAP
+# 5. CHECK UMAP
 # ============================================================
 
 if (!"X_umap" %in% reducedDimNames(sce_umap_epi)) {
   
   stop(
-    "No existe X_umap en reducedDims(sce_umap_epi)."
+    "X_umap does not exist in reducedDims(sce_umap_epi)."
   )
 }
 
 
 # ============================================================
-# 6. EXTRAER COORDENADAS
+# 6. EXTRACT COORDINATES
 # ============================================================
 
 umap_coordinates <- reducedDim(
@@ -217,7 +217,7 @@ umap_df <- data.frame(
 
 
 # ============================================================
-# 7. ORDEN DE TIPOS CELULARES
+# 7. CELL TYPE ORDER
 # ============================================================
 
 umap_df$cell_type <- factor(
@@ -230,10 +230,10 @@ umap_df$cell_type <- factor(
 
 
 # ============================================================
-# 8. UMAP ESTILO SCANPY / NATURE
+# 8. UMAP IN SCANPY / NATURE STYLE
 #
-# Un solo UMAP:
-# Pediatric + Adult juntos
+# A single UMAP:
+# Pediatric + Adult together
 # ============================================================
 
 p_umap <- ggplot(
@@ -249,9 +249,9 @@ p_umap <- ggplot(
 ) +
   
   # ----------------------------------------------------------
-# Puntos:
-# relativamente pequeños para conservar estructura,
-# pero visibles a 600 dpi
+# Points:
+# relatively small to preserve structure,
+# but visible at 600 dpi
 # ----------------------------------------------------------
 
 geom_point(
@@ -261,7 +261,7 @@ geom_point(
 ) +
   
   # ----------------------------------------------------------
-# Paleta Scanpy / Matplotlib
+# Scanpy / Matplotlib palette
 # ----------------------------------------------------------
 
 scale_color_manual(
@@ -270,13 +270,13 @@ scale_color_manual(
 ) +
   
   # ----------------------------------------------------------
-# Misma escala X/Y
+# Same X/Y scale
 # ----------------------------------------------------------
 
 coord_equal() +
   
   # ----------------------------------------------------------
-# Solo título principal
+# Main title only
 # ----------------------------------------------------------
 
 labs(
@@ -295,7 +295,7 @@ labs(
 ) +
   
   # ----------------------------------------------------------
-# Estilo limpio
+# Clean style
 # ----------------------------------------------------------
 
 theme_void(
@@ -305,7 +305,7 @@ theme_void(
   theme(
     
     # --------------------------------------------------------
-    # TÍTULO
+    # TITLE
     # --------------------------------------------------------
     
     plot.title =
@@ -320,7 +320,7 @@ theme_void(
       ),
     
     # --------------------------------------------------------
-    # LEYENDA A LA DERECHA
+    # LEGEND ON THE RIGHT
     # --------------------------------------------------------
     
     legend.position =
@@ -367,7 +367,7 @@ theme_void(
   ) +
   
   # ----------------------------------------------------------
-# Círculos grandes en leyenda
+# Large circles in legend
 # ----------------------------------------------------------
 
 guides(
@@ -392,28 +392,28 @@ print(
 
 
 # ============================================================
-# PARTE B
-# PROPORCIONES CELULARES
+# PART B
+# CELL PROPORTIONS
 # ============================================================
 
 
 # ============================================================
-# 9. IMPORTANTE:
+# 9. IMPORTANT:
 #
-# Para proporciones usamos sce_age
+# For proportions we use sce_age
 #
-# NO sce_age_filt
+# NOT sce_age_filt
 #
-# porque sce_age_filt ya eliminó combinaciones
-# donor x cell type con menos de 20 células.
+# because sce_age_filt already removed
+# donor x cell type combinations with fewer than 20 cells.
 #
-# Eso podría sesgar la composición.
+# That could bias the composition.
 #
-# sce_age contiene:
+# sce_age contains:
 # COVID+
 # nasal cavity
 # Pediatric / Adult
-# antes de ese filtro.
+# before that filter.
 # ============================================================
 
 prop_meta <- as.data.frame(
@@ -462,7 +462,7 @@ prop_meta <- as.data.frame(
 
 
 # ============================================================
-# 10. CONTAR CÉLULAS POR DONANTE
+# 10. COUNT CELLS PER DONOR
 # ============================================================
 
 prop_donor <- prop_meta %>%
@@ -476,10 +476,10 @@ prop_donor <- prop_meta %>%
 
 
 # ============================================================
-# 11. AGREGAR CEROS
+# 11. ADD ZEROS
 #
-# Si un donor no presenta un tipo celular,
-# debe entrar como 0 y no desaparecer.
+# If a donor does not have a given cell type,
+# it must be entered as 0 rather than dropped.
 # ============================================================
 
 donor_groups <- prop_meta %>%
@@ -523,9 +523,9 @@ prop_donor <- complete_design %>%
 
 
 # ============================================================
-# 12. PROPORCIÓN POR DONANTE
+# 12. PROPORTION PER DONOR
 #
-# Dentro del compartimento epitelial
+# Within the epithelial compartment
 # ============================================================
 
 prop_donor <- prop_donor %>%
@@ -578,9 +578,9 @@ prop_donor$cell_type <- factor(
 
 
 # ============================================================
-# 13. WILCOXON POR TIPO CELULAR
+# 13. WILCOXON PER CELL TYPE
 #
-# Unidad experimental = DONANTE
+# Experimental unit = DONOR
 # ============================================================
 
 prop_tests_list <- list()
@@ -749,7 +749,7 @@ print(
 
 
 # ============================================================
-# 15. RESUMEN PARA BARRAS
+# 15. SUMMARY FOR BAR CHART
 # ============================================================
 
 prop_summary <- prop_donor %>%
@@ -786,9 +786,9 @@ prop_summary <- prop_donor %>%
 
 
 # ============================================================
-# 16. COLORES PEDIATRIC / ADULT
+# 16. PEDIATRIC / ADULT COLORS
 #
-# Mantener los colores utilizados en el paper
+# Keep the colors used in the paper
 # ============================================================
 
 group_colors <- c(
@@ -802,9 +802,9 @@ group_colors <- c(
 
 
 # ============================================================
-# 17. POSICIONES PARA SIGNIFICANCIA
+# 17. POSITIONS FOR SIGNIFICANCE
 #
-# Solo se mostrará si FDR < 0.05
+# Only shown if FDR < 0.05
 # ============================================================
 
 annotation_prop <- prop_donor %>%
@@ -839,15 +839,15 @@ annotation_prop <- prop_donor %>%
 
 
 # ============================================================
-# 18. GRÁFICA DE PROPORCIONES
+# 18. PROPORTIONS PLOT
 #
-# Barras = media entre donantes
-# Puntos = cada donante
+# Bars = mean across donors
+# Points = each donor
 #
-# SIN título
-# SIN subtítulo
+# NO title
+# NO subtitle
 #
-# Leyenda a la derecha
+# Legend on the right
 # ============================================================
 
 p_prop <- ggplot(
@@ -863,7 +863,7 @@ p_prop <- ggplot(
 ) +
   
   # ----------------------------------------------------------
-# BARRAS
+# BARS
 # ----------------------------------------------------------
 
 geom_col(
@@ -881,7 +881,7 @@ geom_col(
 ) +
   
   # ----------------------------------------------------------
-# ERROR ESTÁNDAR
+# STANDARD ERROR
 # ----------------------------------------------------------
 
 geom_errorbar(
@@ -914,7 +914,7 @@ geom_errorbar(
 ) +
   
   # ----------------------------------------------------------
-# DONANTES INDIVIDUALES
+# INDIVIDUAL DONORS
 # ----------------------------------------------------------
 
 geom_point(
@@ -945,9 +945,9 @@ geom_point(
 ) +
   
   # ----------------------------------------------------------
-# SIGNIFICANCIA
+# SIGNIFICANCE
 #
-# Solo si FDR < 0.05
+# Only if FDR < 0.05
 # ----------------------------------------------------------
 
 geom_text(
@@ -974,7 +974,7 @@ geom_text(
 ) +
   
   # ----------------------------------------------------------
-# COLORES
+# COLORS
 # ----------------------------------------------------------
 
 scale_fill_manual(
@@ -986,7 +986,7 @@ scale_fill_manual(
   ) +
   
   # ----------------------------------------------------------
-# EJE Y
+# Y AXIS
 # ----------------------------------------------------------
 
 scale_y_continuous(
@@ -1006,7 +1006,7 @@ scale_y_continuous(
 ) +
   
   # ----------------------------------------------------------
-# SIN TÍTULO / SUBTÍTULO
+# NO TITLE / SUBTITLE
 # ----------------------------------------------------------
 
 labs(
@@ -1025,7 +1025,7 @@ labs(
 ) +
   
   # ----------------------------------------------------------
-# ESTILO
+# STYLE
 # ----------------------------------------------------------
 
 theme_classic(
@@ -1035,7 +1035,7 @@ theme_classic(
   theme(
     
     # --------------------------------------------------------
-    # EJE X
+    # X AXIS
     # --------------------------------------------------------
     
     axis.text.x =
@@ -1049,7 +1049,7 @@ theme_classic(
       ),
     
     # --------------------------------------------------------
-    # EJE Y
+    # Y AXIS
     # --------------------------------------------------------
     
     axis.text.y =
@@ -1082,7 +1082,7 @@ theme_classic(
       ),
     
     # --------------------------------------------------------
-    # LEYENDA A LA DERECHA
+    # LEGEND ON THE RIGHT
     # --------------------------------------------------------
     
     legend.position =
@@ -1142,7 +1142,7 @@ print(
 
 
 # ============================================================
-# 19. DIRECTORIO
+# 19. DIRECTORY
 # ============================================================
 
 composition_dir <- file.path(
@@ -1159,7 +1159,7 @@ dir.create(
 
 
 # ============================================================
-# 20. GUARDAR TABLA ESTADÍSTICA
+# 20. SAVE STATISTICS TABLE
 # ============================================================
 
 write.csv(
@@ -1177,7 +1177,7 @@ write.csv(
 
 
 # ============================================================
-# 21. GUARDAR UMAP
+# 21. SAVE UMAP
 # ============================================================
 
 ggsave(
@@ -1206,7 +1206,7 @@ ggsave(
 
 
 # ============================================================
-# 22. GUARDAR PROPORCIONES
+# 22. SAVE PROPORTIONS
 # ============================================================
 
 ggsave(
@@ -1235,9 +1235,9 @@ ggsave(
 
 
 # ============================================================
-# 23. FIGURA COMBINADA
+# 23. COMBINED FIGURE
 #
-# UMAP | PROPORCIONES
+# UMAP | PROPORTIONS
 # ============================================================
 
 final_composition <- p_umap |
@@ -1250,7 +1250,7 @@ print(
 
 
 # ============================================================
-# 24. GUARDAR FIGURA COMBINADA
+# 24. SAVE COMBINED FIGURE
 # ============================================================
 
 ggsave(
@@ -1279,12 +1279,12 @@ ggsave(
 
 
 # ============================================================
-# 25. RESUMEN
+# 25. SUMMARY
 # ============================================================
 
 cat(
   "\n========================================\n",
-  "FIGURAS FINALIZADAS\n",
+  "FIGURES FINALIZED\n",
   "========================================\n"
 )
 
@@ -1300,7 +1300,7 @@ cat(
 
 
 cat(
-  "\nProporciones:\n",
+  "\nProportions:\n",
   file.path(
     composition_dir,
     "Yoshida_epithelial_cell_composition_publication.tiff"
@@ -1310,7 +1310,7 @@ cat(
 
 
 cat(
-  "\nFigura combinada:\n",
+  "\nCombined figure:\n",
   file.path(
     composition_dir,
     "Yoshida_UMAP_and_epithelial_composition_publication.tiff"

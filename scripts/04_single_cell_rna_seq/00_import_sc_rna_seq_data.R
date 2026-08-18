@@ -1,25 +1,25 @@
 # ============================================================
-# VALIDACIÓN ORTOGONAL SINGLE-CELL
+# SINGLE-CELL ORTHOGONAL VALIDATION
 #
 # Dataset: Yoshida Airway
-# Condición: COVID+
-# Tejido: nasal cavity
-# Comparación: Pediatric vs Adult
+# Condition: COVID+
+# Tissue: nasal cavity
+# Comparison: Pediatric vs Adult
 #
-# Datos procesados / normalizados
-# Unidad experimental = DONANTE
+# Processed / normalized data
+# Experimental unit = DONOR
 #
-# IMPORTANTE:
-# - sce conserva TODOS los genes
-# - ENSEMBL permanece como rownames
-# - SYMBOL se almacena en rowData
-# - Los 33 genes se extraen SOLO después del filtro de células
-# - No usamos edgeR/DESeq2 porque no tenemos raw counts
+# IMPORTANT:
+# - sce retains ALL genes
+# - ENSEMBL remains as rownames
+# - SYMBOL is stored in rowData
+# - The 33 genes are extracted ONLY after the cell filter
+# - We do not use edgeR/DESeq2 because we do not have raw counts
 # ============================================================
 
 
 # ============================================================
-# 0. PAQUETES
+# 0. PACKAGES
 # ============================================================
 
 library(zellkonverter)
@@ -39,7 +39,7 @@ options(timeout = 3600)
 
 
 # ============================================================
-# 1. ARCHIVO
+# 1. FILE
 # ============================================================
 
 url <- paste0(
@@ -58,7 +58,7 @@ dir.create(
 
 
 # ============================================================
-# 2. DECIDIR SI HAY QUE RECARGAR sce
+# 2. DECIDE WHETHER sce NEEDS TO BE RELOADED
 # ============================================================
 
 reload_sce <- FALSE
@@ -68,8 +68,8 @@ if (exists("sce")) {
   
   cat(
     "\n========================================\n",
-    "El objeto 'sce' ya existe en el ambiente.\n",
-    "Comprobando si puede reutilizarse...\n",
+    "The 'sce' object already exists in the environment.\n",
+    "Checking whether it can be reused...\n",
     "========================================\n"
   )
   
@@ -77,8 +77,8 @@ if (exists("sce")) {
   if (!"X" %in% assayNames(sce)) {
     
     cat(
-      "\nEl objeto no contiene assay X.\n",
-      "Se recargará.\n"
+      "\nThe object does not contain assay X.\n",
+      "It will be reloaded.\n"
     )
     
     reload_sce <- TRUE
@@ -92,7 +92,7 @@ if (exists("sce")) {
     
     
     cat(
-      "\nClase actual de X:\n"
+      "\nCurrent class of X:\n"
     )
     
     print(
@@ -101,14 +101,14 @@ if (exists("sce")) {
     
     
     # --------------------------------------------------------
-    # Si es dgCMatrix podemos comprobar si está vacía
-    # sin sumar toda la matriz
+    # If it is a dgCMatrix we can check whether it is empty
+    # without summing the whole matrix
     # --------------------------------------------------------
     
     if (inherits(X_current, "dgCMatrix")) {
       
       cat(
-        "\nValores almacenados en X:",
+        "\nValues stored in X:",
         length(X_current@x),
         "\n"
       )
@@ -117,8 +117,8 @@ if (exists("sce")) {
       if (length(X_current@x) == 0) {
         
         cat(
-          "\nLa matriz X existente está vacía.\n",
-          "Se eliminará y volverá a importar.\n"
+          "\nThe existing X matrix is empty.\n",
+          "It will be removed and re-imported.\n"
         )
         
         reload_sce <- TRUE
@@ -126,19 +126,19 @@ if (exists("sce")) {
       } else {
         
         cat(
-          "\nLa matriz X existente contiene datos.\n",
-          "Se reutilizará sce.\n"
+          "\nThe existing X matrix contains data.\n",
+          "sce will be reused.\n"
         )
       }
       
     } else {
       
-      # Para matrices respaldadas en HDF5 no hacemos sum(X)
-      # porque sería innecesariamente pesado.
+      # For HDF5-backed matrices we do not run sum(X)
+      # because it would be unnecessarily heavy.
       
       cat(
-        "\nX no es una dgCMatrix vacía.\n",
-        "Se comprobarán genes específicos más adelante.\n"
+        "\nX is not an empty dgCMatrix.\n",
+        "Specific genes will be checked later.\n"
       )
     }
   }
@@ -146,7 +146,7 @@ if (exists("sce")) {
 } else {
   
   cat(
-    "\nEl objeto sce no existe en el ambiente.\n"
+    "\nThe sce object does not exist in the environment.\n"
   )
   
   reload_sce <- TRUE
@@ -154,7 +154,7 @@ if (exists("sce")) {
 
 
 # ============================================================
-# 3. DESCARGAR SOLO SI NO EXISTE
+# 3. DOWNLOAD ONLY IF IT DOES NOT EXIST
 # ============================================================
 
 if (reload_sce) {
@@ -162,8 +162,8 @@ if (reload_sce) {
   if (!file.exists(file_h5ad)) {
     
     cat(
-      "\nArchivo H5AD no encontrado.\n",
-      "Descargando...\n"
+      "\nH5AD file not found.\n",
+      "Downloading...\n"
     )
     
     
@@ -177,14 +177,14 @@ if (reload_sce) {
   } else {
     
     cat(
-      "\nEl archivo H5AD ya existe en disco.\n",
-      "No se descargará nuevamente.\n"
+      "\nThe H5AD file already exists on disk.\n",
+      "It will not be downloaded again.\n"
     )
   }
   
   
   # ==========================================================
-  # 4. ELIMINAR OBJETOS GRANDES DEFECTUOSOS
+  # 4. REMOVE LARGE, BROKEN OBJECTS
   # ==========================================================
   
   if (exists("sce")) {
@@ -205,12 +205,12 @@ if (reload_sce) {
   
   
   # ==========================================================
-  # 5. CARGAR SIN MATERIALIZAR TODA LA MATRIZ EN RAM
+  # 5. LOAD WITHOUT MATERIALIZING THE WHOLE MATRIX IN RAM
   # ==========================================================
   
   cat(
     "\n========================================\n",
-    "Leyendo H5AD con respaldo HDF5...\n",
+    "Reading H5AD with HDF5 backing...\n",
     "reader = 'R'\n",
     "use_hdf5 = TRUE\n",
     "========================================\n"
@@ -226,12 +226,12 @@ if (reload_sce) {
 
 
 # ============================================================
-# 6. COMPROBAR OBJETO
+# 6. CHECK OBJECT
 # ============================================================
 
 cat(
   "\n========================================\n",
-  "OBJETO SCE\n",
+  "SCE OBJECT\n",
   "========================================\n"
 )
 
@@ -239,7 +239,7 @@ print(sce)
 
 
 cat(
-  "\nAssays disponibles:\n"
+  "\nAvailable assays:\n"
 )
 
 print(
@@ -248,7 +248,7 @@ print(
 
 
 cat(
-  "\nDimensiones:\n"
+  "\nDimensions:\n"
 )
 
 print(
@@ -259,13 +259,13 @@ print(
 if (!"X" %in% assayNames(sce)) {
   
   stop(
-    "\nERROR: el objeto no contiene un assay llamado X."
+    "\nERROR: the object does not contain an assay named X."
   )
 }
 
 
 cat(
-  "\nClase de X:\n"
+  "\nClass of X:\n"
 )
 
 print(
@@ -276,9 +276,9 @@ print(
 
 
 # ============================================================
-# 7. MAPEAR ENSEMBL -> SYMBOL
+# 7. MAP ENSEMBL -> SYMBOL
 #
-# sce SIGUE CONTENIENDO TODO EL TRANSCRIPTOMA
+# sce STILL CONTAINS THE WHOLE TRANSCRIPTOME
 # ============================================================
 
 if (!"ENSEMBL" %in% colnames(rowData(sce))) {
@@ -292,7 +292,7 @@ if (!"ENSEMBL" %in% colnames(rowData(sce))) {
 if (!"SYMBOL" %in% colnames(rowData(sce))) {
   
   cat(
-    "\nMapeando ENSEMBL -> SYMBOL...\n"
+    "\nMapping ENSEMBL -> SYMBOL...\n"
   )
   
   
@@ -319,13 +319,13 @@ if (!"SYMBOL" %in% colnames(rowData(sce))) {
 } else {
   
   cat(
-    "\nLa columna SYMBOL ya existe.\n"
+    "\nThe SYMBOL column already exists.\n"
   )
 }
 
 
 # ============================================================
-# 8. GENES DE INTERÉS
+# 8. GENES OF INTEREST
 # ============================================================
 
 genes_primary_sc <- c(
@@ -366,7 +366,7 @@ genes_primary_sc <- c(
 
 
 # ============================================================
-# 9. COMPROBAR PRESENCIA
+# 9. CHECK PRESENCE
 # ============================================================
 
 presence_primary <- data.frame(
@@ -378,7 +378,7 @@ presence_primary <- data.frame(
 
 
 cat(
-  "\nGenes presentes:\n"
+  "\nGenes present:\n"
 )
 
 
@@ -402,7 +402,7 @@ cat(
 
 
 # ============================================================
-# 10. ÍNDICES ENSEMBL DE LOS 33 GENES
+# 10. ENSEMBL INDICES OF THE 33 GENES
 # ============================================================
 
 idx_primary <- which(
@@ -431,7 +431,7 @@ gene_annotation_primary <- data.frame(
 
 
 cat(
-  "\nFeatures correspondientes a los genes de interés:\n"
+  "\nFeatures corresponding to the genes of interest:\n"
 )
 
 
@@ -442,10 +442,10 @@ print(
 
 
 # ============================================================
-# 11. COMPROBAR QUE LA MATRIZ REALMENTE TIENE EXPRESIÓN
+# 11. CHECK THAT THE MATRIX ACTUALLY CONTAINS EXPRESSION
 #
-# SOLO leemos 33 filas.
-# No sumamos los 32 mil genes.
+# We ONLY read 33 rows.
+# We do not sum the ~32 thousand genes.
 # ============================================================
 
 X_check <- assay(
@@ -459,7 +459,7 @@ X_check <- assay(
 
 
 cat(
-  "\nComprobando expresión de los 33 genes...\n"
+  "\nChecking expression of the 33 genes...\n"
 )
 
 
@@ -513,21 +513,21 @@ if (
   
   stop(
     paste0(
-      "\nERROR: los 33 genes continúan con expresión cero.\n",
-      "La matriz X no fue importada correctamente.\n",
-      "No se generarán resultados artificiales."
+      "\nERROR: the 33 genes still show zero expression.\n",
+      "The X matrix was not imported correctly.\n",
+      "No artificial results will be generated."
     )
   )
 }
 
 
 cat(
-  "\nLa matriz contiene expresión real.\n",
-  "Continuando con el análisis.\n"
+  "\nThe matrix contains real expression.\n",
+  "Continuing with the analysis.\n"
 )
 
 
-# Liberar comprobación temporal
+# Free temporary check
 
 rm(
   X_check
@@ -539,7 +539,7 @@ invisible(
 
 
 # ============================================================
-# 12. DIRECTORIOS
+# 12. DIRECTORIES
 # ============================================================
 
 results_dir <- "results/scRNAseq_COVID_nasal_age"
@@ -647,14 +647,14 @@ print(
 
 
 # ============================================================
-# 14. FILTRAR CÉLULAS
+# 14. FILTER CELLS
 #
-# SOLO:
+# ONLY:
 # - Adult / Ped
 # - COVID+
 # - nasal cavity
 #
-# sce conserva TODOS los genes
+# sce retains ALL genes
 # ============================================================
 
 keep <- (
@@ -674,7 +674,7 @@ keep <- (
 
 
 cat(
-  "\nCélulas COVID+ nasales Adult/Ped:",
+  "\nCOVID+ nasal cells Adult/Ped:",
   sum(keep),
   "\n"
 )
@@ -683,7 +683,7 @@ cat(
 if (sum(keep) == 0) {
   
   stop(
-    "\nNo se encontraron células con los filtros establecidos."
+    "\nNo cells were found with the established filters."
   )
 }
 
@@ -692,7 +692,7 @@ sce_age <- sce[, keep]
 
 
 # ============================================================
-# 15. FACTORES
+# 15. FACTORS
 # ============================================================
 
 sce_age$Group <- factor(
@@ -720,7 +720,7 @@ sce_age$Cell_type_annotation_level2 <-
 
 
 # ============================================================
-# 16. RESUMEN DE CÉLULAS
+# 16. CELL SUMMARY
 # ============================================================
 
 cat(
@@ -738,14 +738,14 @@ cat(
 
 
 cat(
-  "Células:",
+  "Cells:",
   ncol(sce_age),
   "\n"
 )
 
 
 cat(
-  "\nCélulas por grupo:\n"
+  "\nCells per group:\n"
 )
 
 
@@ -757,7 +757,7 @@ print(
 
 
 # ============================================================
-# 17. DONANTES
+# 17. DONORS
 # ============================================================
 
 donors <- as.data.frame(
@@ -773,14 +773,14 @@ donors <- as.data.frame(
 
 
 cat(
-  "\nDonantes totales:",
+  "\nTotal donors:",
   nrow(donors),
   "\n"
 )
 
 
 cat(
-  "\nDonantes por grupo:\n"
+  "\nDonors per group:\n"
 )
 
 
@@ -803,7 +803,7 @@ write.csv(
 
 
 # ============================================================
-# 18. CÉLULAS POR DONOR x CELL TYPE
+# 18. CELLS PER DONOR x CELL TYPE
 # ============================================================
 
 cell_numbers <- as.data.frame(
@@ -830,7 +830,7 @@ write.csv(
 
 
 # ============================================================
-# 19. MÍNIMO 20 CÉLULAS POR DONOR x CELL TYPE
+# 19. MINIMUM 20 CELLS PER DONOR x CELL TYPE
 # ============================================================
 
 min_cells <- 20
@@ -866,14 +866,14 @@ sce_age_filt <- sce_age[, keep2]
 
 
 cat(
-  "\nCélulas antes del filtro:",
+  "\nCells before the filter:",
   ncol(sce_age),
   "\n"
 )
 
 
 cat(
-  "Células después de >=20:",
+  "Cells after >=20:",
   ncol(sce_age_filt),
   "\n"
 )
@@ -882,13 +882,13 @@ cat(
 if (ncol(sce_age_filt) == 0) {
   
   stop(
-    "\nNo quedaron células después del filtro >=20."
+    "\nNo cells remained after the >=20 filter."
   )
 }
 
 
 # ============================================================
-# 20. METADATA FILTRADA
+# 20. FILTERED METADATA
 # ============================================================
 
 meta_filt <- as.data.frame(
@@ -897,13 +897,13 @@ meta_filt <- as.data.frame(
 
 
 # ============================================================
-# 21. AHORA SÍ EXTRAER SOLO LAS 33 FILAS DE EXPRESIÓN
+# 21. NOW EXTRACT ONLY THE 33 EXPRESSION ROWS
 #
-# IMPORTANTE:
-# sce_age_filt sigue conservando todos los genes.
+# IMPORTANT:
+# sce_age_filt still retains all genes.
 #
-# Solo X_primary es reducido porque únicamente necesitamos
-# estudiar esos genes.
+# Only X_primary is reduced because we only need
+# to study those genes.
 # ============================================================
 
 X_primary <- assay(
@@ -917,7 +917,7 @@ X_primary <- assay(
 
 
 cat(
-  "\nDimensiones de X_primary:\n"
+  "\nDimensions of X_primary:\n"
 )
 
 
@@ -927,7 +927,7 @@ print(
 
 
 cat(
-  "\nEsperado: ~33 genes x células filtradas.\n"
+  "\nExpected: ~33 genes x filtered cells.\n"
 )
 
 
@@ -948,7 +948,7 @@ groups <- unique(
 
 
 cat(
-  "\nNúmero de agregados donor x cell type:",
+  "\nNumber of donor x cell type aggregates:",
   length(groups),
   "\n"
 )
@@ -957,15 +957,15 @@ cat(
 if (length(groups) == 0) {
   
   stop(
-    "\nNo se pudieron generar agregados donor x cell type."
+    "\nDonor x cell type aggregates could not be generated."
   )
 }
 
 
 # ============================================================
-# 23. EXPRESIÓN MEDIA
+# 23. MEAN EXPRESSION
 #
-# Cada columna final = DONANTE x CELL TYPE
+# Each final column = DONOR x CELL TYPE
 # ============================================================
 
 mean_expr_list <- lapply(
@@ -1012,7 +1012,7 @@ colnames(mean_expr) <- groups
 
 
 cat(
-  "\nDimensión mean_expr:\n"
+  "\nDimension of mean_expr:\n"
 )
 
 print(
@@ -1021,7 +1021,7 @@ print(
 
 
 # ============================================================
-# 24. FRACCIÓN DE CÉLULAS CON EXPRESIÓN > 0
+# 24. FRACTION OF CELLS WITH EXPRESSION > 0
 # ============================================================
 
 fraction_expr_list <- lapply(
@@ -1068,7 +1068,7 @@ colnames(fraction_expr) <- groups
 
 
 # ============================================================
-# 25. METADATA DE AGREGADOS
+# 25. AGGREGATE METADATA
 # ============================================================
 
 aggregate_meta <- data.frame(
@@ -1131,7 +1131,7 @@ aggregate_meta$Group <- factor(
 
 
 # ============================================================
-# 26. ANOTACIÓN DE LOS GENES SELECCIONADOS
+# 26. ANNOTATION OF SELECTED GENES
 # ============================================================
 
 gene_annotation <- data.frame(
@@ -1154,7 +1154,7 @@ gene_annotation <- data.frame(
 
 
 # ============================================================
-# 27. FORMATO LARGO
+# 27. LONG FORMAT
 # ============================================================
 
 expr_primary <- data.frame(
@@ -1206,7 +1206,7 @@ expr_primary$Group <- factor(
 
 
 # ============================================================
-# 28. DONANTES POR CELL TYPE
+# 28. DONORS PER CELL TYPE
 # ============================================================
 
 donor_counts <- aggregate_meta %>%
@@ -1225,7 +1225,7 @@ donor_counts <- aggregate_meta %>%
 
 
 cat(
-  "\nDonantes por cell type y grupo:\n"
+  "\nDonors per cell type and group:\n"
 )
 
 
@@ -1249,7 +1249,7 @@ write.csv(
 
 
 # ============================================================
-# 29. MÍNIMO 3 DONANTES EN AMBOS GRUPOS
+# 29. MINIMUM 3 DONORS IN BOTH GROUPS
 # ============================================================
 
 min_donors <- 3
@@ -1281,7 +1281,7 @@ valid_celltypes <- donor_counts %>%
 
 
 cat(
-  "\nTipos celulares comparables:",
+  "\nComparable cell types:",
   length(valid_celltypes),
   "\n"
 )
@@ -1295,13 +1295,13 @@ print(
 if (length(valid_celltypes) == 0) {
   
   stop(
-    "\nNo existen cell types con >=3 donantes en ambos grupos."
+    "\nNo cell types have >=3 donors in both groups."
   )
 }
 
 
 # ============================================================
-# 30. FILTRAR TIPOS CELULARES VÁLIDOS
+# 30. FILTER VALID CELL TYPES
 # ============================================================
 
 expr_primary <- expr_primary %>%
@@ -1313,7 +1313,7 @@ expr_primary <- expr_primary %>%
 
 
 # ============================================================
-# 31. RESUMEN ENTRE DONANTES
+# 31. SUMMARY ACROSS DONORS
 # ============================================================
 
 expression_summary <- expr_primary %>%
@@ -1355,7 +1355,7 @@ expression_summary <- expr_primary %>%
 
 # ============================================================
 # 32. RANKING:
-# ¿DÓNDE SE EXPRESA MÁS CADA GEN?
+# WHERE IS EACH GENE MOST EXPRESSED?
 # ============================================================
 
 expression_rank <- expression_summary %>%
@@ -1389,7 +1389,7 @@ top3_celltypes <- expression_rank %>%
 
 cat(
   "\n========================================\n",
-  "TOP 3 CELL TYPES POR GEN\n",
+  "TOP 3 CELL TYPES PER GENE\n",
   "========================================\n"
 )
 
@@ -1403,9 +1403,9 @@ print(
 
 
 # ============================================================
-# 33. DIFERENCIA ADULT - PEDIATRIC
+# 33. ADULT - PEDIATRIC DIFFERENCE
 #
-# NO se llama logFC porque X está procesada
+# Not called logFC because X is already processed data
 # ============================================================
 
 age_difference <- expression_summary %>%
@@ -1453,7 +1453,7 @@ age_difference <- expression_summary %>%
 
 
 # ============================================================
-# 34. WILCOXON ENTRE DONANTES
+# 34. WILCOXON ACROSS DONORS
 # ============================================================
 
 test_results_list <- list()
@@ -1606,7 +1606,7 @@ if (nrow(test_results) > 0) {
 
 cat(
   "\n========================================\n",
-  "RESULTADOS ADULT vs PEDIATRIC\n",
+  "ADULT vs PEDIATRIC RESULTS\n",
   "========================================\n"
 )
 
@@ -1620,7 +1620,7 @@ print(
 
 
 # ============================================================
-# 36. GUARDAR TABLAS
+# 36. SAVE TABLES
 # ============================================================
 
 write.csv(
@@ -1679,10 +1679,10 @@ write.csv(
 
 
 # ============================================================
-# 37. FIGURA A
+# 37. FIGURE A
 #
-# Color = expresión media entre donantes
-# Tamaño = % de células positivas
+# Color = mean expression across donors
+# Size = % of positive cells
 # ============================================================
 
 pA <- ggplot(
@@ -1756,7 +1756,7 @@ print(pA)
 
 
 # ============================================================
-# 38. FIGURA B
+# 38. FIGURE B
 # ============================================================
 
 pB <- ggplot(
@@ -1814,7 +1814,7 @@ print(pB)
 
 
 # ============================================================
-# 39. GUARDAR FIGURAS
+# 39. SAVE FIGURES
 # ============================================================
 
 ggsave(
@@ -1870,38 +1870,38 @@ ggsave(
 
 
 # ============================================================
-# 40. RESUMEN FINAL
+# 40. FINAL SUMMARY
 # ============================================================
 
 cat(
   "\n========================================\n",
-  "VALIDACIÓN ORTOGONAL FINALIZADA\n",
+  "ORTHOGONAL VALIDATION COMPLETE\n",
   "========================================\n"
 )
 
 
 cat(
-  "Condición: COVID+\n"
+  "Condition: COVID+\n"
 )
 
 
 cat(
-  "Tejido: nasal cavity\n"
+  "Tissue: nasal cavity\n"
 )
 
 
 cat(
-  "Comparación: Pediatric vs Adult\n"
+  "Comparison: Pediatric vs Adult\n"
 )
 
 
 cat(
-  "Unidad experimental: donor\n"
+  "Experimental unit: donor\n"
 )
 
 
 cat(
-  "Genes de interés:",
+  "Genes of interest:",
   length(
     unique(
       expr_primary$SYMBOL
@@ -1912,7 +1912,7 @@ cat(
 
 
 cat(
-  "Células finales:",
+  "Final cells:",
   ncol(
     sce_age_filt
   ),
@@ -1921,7 +1921,7 @@ cat(
 
 
 cat(
-  "Donantes:",
+  "Donors:",
   length(
     unique(
       sce_age_filt$donor_id
@@ -1941,21 +1941,21 @@ cat(
 
 
 cat(
-  "Mínimo células donor x cell type:",
+  "Minimum cells per donor x cell type:",
   min_cells,
   "\n"
 )
 
 
 cat(
-  "Mínimo donantes por grupo:",
+  "Minimum donors per group:",
   min_donors,
   "\n"
 )
 
 
 cat(
-  "\nResultados guardados en:\n",
+  "\nResults saved to:\n",
   results_dir,
   "\n"
 )
