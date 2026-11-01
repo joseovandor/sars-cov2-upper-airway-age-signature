@@ -86,6 +86,7 @@ file.
 config/       labels used for the GSEA themes in the figures
 data/         downloaded input data (not tracked)
 results/      all outputs (not tracked)
+supplementary_data/  complete supplementary tables of the article
 scripts/      analysis scripts, numbered in the order they are run
 ```
 

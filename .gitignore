@@ -31,3 +31,6 @@ results/
 .DS_Store
 Thumbs.db
 desktop.ini
+
+# complete supplementary tables of the article
+!supplementary_data/*.xlsx
